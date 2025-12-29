@@ -31,6 +31,9 @@ model Post {
   authorId   String
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+
+  //? one-to-many relationship between Post and Comment models.
+  comments   Comment[]
 }
 
 enum CommentStatus {
@@ -43,6 +46,7 @@ model Comment {
   content   String        @db.Text
   authorId  String
   postId    String
+  post      Post          @relation(fields: [postId], references: [id])
   parentId  String
   status    CommentStatus @default(APPROVED)
   createdAt DateTime      @default(now())
