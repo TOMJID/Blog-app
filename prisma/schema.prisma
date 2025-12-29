@@ -28,12 +28,16 @@ model Post {
   status     PostStatus @default(PUBLISHED)
   tags       String[]
   view       Int        @default(0)
-  authorId   String
+  authorId   String //? well be manage by betterAuth
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 
   //? one-to-many relationship between Post and Comment models.
-  comments   Comment[]
+  comments Comment[]
+
+  //? indexing
+  @@index([authorId])
+  @@map("posts")
 }
 
 enum CommentStatus {
@@ -44,11 +48,16 @@ enum CommentStatus {
 model Comment {
   id        String        @id @default(uuid())
   content   String        @db.Text
-  authorId  String
+  authorId  String //? well be manage by betterAuth
   postId    String
   post      Post          @relation(fields: [postId], references: [id])
   parentId  String
   status    CommentStatus @default(APPROVED)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+
+  //? indexing
+  @@index([postId])
+  @@index([authorId])
+  @@map("comments")
 }
