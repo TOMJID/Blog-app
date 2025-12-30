@@ -5,7 +5,7 @@ const PORT = process.env.PORT;
 async function main() {
   try {
     await prisma.$connect();
-    console.log("COnnected to the database");
+    console.log("Connected to the database");
 
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
