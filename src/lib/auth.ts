@@ -7,6 +7,8 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   trustedOrigins: [process.env.FRONTEND_URL!],
+
+  //? Customize/adding  user fields
   user: {
     additionalFields: {
       role: {
@@ -25,7 +27,18 @@ export const auth = betterAuth({
       },
     },
   },
+  //? email and password config
   emailAndPassword: {
     enabled: true,
+    autoSignIn: false,
+    requireEmailVerification: true,
+  },
+  //?
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url, token }, request) => {
+      console.log(
+        `Send verification email to ${user.email} \n with url: ${url} \n and token: ${token}`
+      );
+    },
   },
 });
