@@ -46,7 +46,7 @@ export const auth = betterAuth({
     autoSignIn: false,
     requireEmailVerification: true,
   },
-  //?
+  //? email verification config with nodemailer
   emailVerification: {
     sendOnSignUp:true,
     sendVerificationEmail: async ({ user, url, token }, request) => {
