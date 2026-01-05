@@ -3,12 +3,11 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import nodemailer from "nodemailer";
 
-// Create a transporter using Ethereal test credentials.
-// For production, replace with your actual SMTP server details.
+// Create a transporter using Gmail SMTP
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
-  secure: false, // Use true for port 465, false for port 587
+  secure: false,
   auth: {
     user: process.env.GMAIL_NAME,
     pass: process.env.GMAIL_APP_PASS,
@@ -21,7 +20,7 @@ export const auth = betterAuth({
   }),
   trustedOrigins: [process.env.FRONTEND_URL!],
 
-  //? Customize/adding  user fields
+  //? Customize/adding user fields
   user: {
     additionalFields: {
       role: {
@@ -40,24 +39,28 @@ export const auth = betterAuth({
       },
     },
   },
-  //? email and password config
+
+  //? Email and password config
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
     requireEmailVerification: true,
   },
-  //? email verification config with nodemailer
+
+  //? Email verification config with nodemailer
   emailVerification: {
-    sendOnSignUp:true,
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url, token }, request) => {
       try {
-        const verificationToken = `${process.env
-        .FRONTEND_URL!}/verify-email?token=${token}`;
-      const info = await transporter.sendMail({
-        from: '"prisma blog" <tomjidhuda04@gmail.com>',
-        to: user.email,
-        subject: "please verify your email for prisma blog",
-        html: `
+        const verificationUrl = `${process.env
+          .FRONTEND_URL!}/verify-email?token=${token}`;
+
+        const info = await transporter.sendMail({
+          from: '"Prisma Blog" <tomjidhuda04@gmail.com>',
+          to: user.email,
+          subject: "Please verify your email for Prisma Blog",
+          html: `
 <!DOCTYPE html>
 <html>
 <head>
@@ -84,14 +87,14 @@ export const auth = betterAuth({
             
             <!-- Call to Action Button -->
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${verificationToken}" style="background-color: #000000; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px; display: inline-block;">
+                <a href="${verificationUrl}" style="background-color: #000000; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px; display: inline-block;">
                     Verify Email Address
                 </a>
             </div>
 
             <p style="font-size: 14px; color: #666666; margin-top: 24px;">
                 If the button above doesn't work, verify by clicking the link below:<br>
-                <a href="${verificationToken}" style="color: #2563eb; word-break: break-all;">${verificationToken}</a>
+                <a href="${verificationUrl}" style="color: #2563eb; word-break: break-all;">${verificationUrl}</a>
             </p>
 
             <p style="font-size: 14px; color: #666666; margin-top: 24px;">
@@ -106,14 +109,25 @@ export const auth = betterAuth({
     </div>
 </body>
 </html>
-`,
-      });
-      console.log("message send:", info.messageId);
-    }
-       catch (error: any) {
-        console.error(error.message);
+          `,
+        });
+
+        console.log("Message sent:", info.messageId);
+      } catch (error: any) {
+        console.error("Email sending failed:", error.message);
         throw error;
       }
-      
+    },
+  },
+
+  //? OAuth config for Google login
+  //! for the login it need to be done in frontend side also
+  socialProviders: {
+    google: {
+      prompt: "select_account consent",
+      accessType: "offline",
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
   },
 });
