@@ -6,8 +6,9 @@ import { prisma } from "../../lib/prisma";
 const GetAllPosts = async (payload: {
   search: string | undefined;
   tags: string[] | [];
+  isFeatured: boolean;
 }) => {
-  const { search, tags } = payload;
+  const { search, tags, isFeatured } = payload;
   const andConditions: PostWhereInput[] = [];
 
   if (search) {
@@ -32,6 +33,11 @@ const GetAllPosts = async (payload: {
     });
   }
 
+  if (typeof isFeatured === "boolean") {
+    andConditions.push({
+      isFeatured,
+    });
+  }
   const allPosts = prisma.post.findMany({
     where: {
       AND: andConditions,
