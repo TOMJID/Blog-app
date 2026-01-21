@@ -8,6 +8,11 @@ const GetAllPosts = async (payload: { search: string | undefined }) => {
       OR: [
         { title: { contains: payload.search, mode: "insensitive" } },
         { content: { contains: payload.search, mode: "insensitive" } },
+        {
+          tags: {
+            has: payload.search,
+          },
+        },
       ],
     },
   });
