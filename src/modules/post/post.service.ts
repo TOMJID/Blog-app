@@ -5,7 +5,10 @@ import { prisma } from "../../lib/prisma";
 const GetAllPosts = async (payload: { search: string | undefined }) => {
   const allPosts = prisma.post.findMany({
     where: {
-      title: payload.search,
+      OR: [
+        { title: { contains: payload.search, mode: "insensitive" } },
+        { content: { contains: payload.search, mode: "insensitive" } },
+      ],
     },
   });
   return allPosts;
