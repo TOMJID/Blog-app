@@ -1,6 +1,20 @@
 import { Request, Response } from "express";
 import { postService } from "./post.service";
 
+//? getting all post
+const GetAllPosts = async (req: Request, res: Response) => {
+  try {
+    const result = await postService.GetAllPosts();
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(401).json({
+      error: "Can't find any posts",
+      details: error,
+    });
+  }
+};
+
+//? creating new post
 const CreatePost = async (req: Request, res: Response) => {
   try {
     const user = req.user;
@@ -10,7 +24,7 @@ const CreatePost = async (req: Request, res: Response) => {
         error: "Unauthenticated",
       });
     }
-    const result = await postService.createPost(req.body, user.id as string);
+    const result = await postService.CreatePost(req.body, user.id as string);
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({
@@ -21,5 +35,6 @@ const CreatePost = async (req: Request, res: Response) => {
 };
 
 export const PostController = {
+  GetAllPosts,
   CreatePost,
 };
