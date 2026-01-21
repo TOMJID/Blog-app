@@ -4,7 +4,9 @@ import { postService } from "./post.service";
 //? getting all post
 const GetAllPosts = async (req: Request, res: Response) => {
   try {
-    const result = await postService.GetAllPosts();
+    const { search } = req.query;
+    const searchString = typeof search === "string" ? search : undefined;
+    const result = await postService.GetAllPosts({ search: searchString });
     res.status(200).json(result);
   } catch (error) {
     res.status(401).json({
