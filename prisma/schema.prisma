@@ -16,7 +16,7 @@ datasource db {
 enum PostStatus {
   DRAFT
   PUBLISHED
-  ARCHIVES
+  ARCHIVED
 }
 
 model Post {

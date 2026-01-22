@@ -12,7 +12,7 @@
 export const PostStatus = {
   DRAFT: 'DRAFT',
   PUBLISHED: 'PUBLISHED',
-  ARCHIVES: 'ARCHIVES'
+  ARCHIVED: 'ARCHIVED'
 } as const
 
 export type PostStatus = (typeof PostStatus)[keyof typeof PostStatus]
