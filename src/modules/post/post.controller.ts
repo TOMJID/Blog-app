@@ -27,7 +27,23 @@ const GetAllPosts = async (req: Request, res: Response) => {
     })();
 
     //? for status and authorId
-    const status = req.query.status as PostStatus | undefined;
+    // const status = req.query.status as PostStatus | undefined;
+
+    const status = (() => {
+      const queryStatus = req.query.status;
+      switch (queryStatus) {
+        case PostStatus.DRAFT:
+          return PostStatus.DRAFT;
+
+        case PostStatus.PUBLISHED:
+          return PostStatus.PUBLISHED;
+
+        case PostStatus.ARCHIVED:
+          return PostStatus.ARCHIVED;
+        default:
+          return undefined;
+      }
+    })();
 
     const result = await postService.GetAllPosts({
       search: searchString,
