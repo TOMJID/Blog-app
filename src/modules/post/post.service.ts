@@ -9,8 +9,12 @@ const GetAllPosts = async (payload: {
   isFeatured: boolean | undefined;
   status: PostStatus | undefined;
   authorId: string | undefined;
+  page: number;
+  limit: number;
+  skip: number;
 }) => {
-  const { search, tags, isFeatured, status, authorId } = payload;
+  const { search, tags, isFeatured, status, authorId, page, limit, skip } =
+    payload;
   const andConditions: PostWhereInput[] = [];
 
   //? search filter
@@ -59,6 +63,8 @@ const GetAllPosts = async (payload: {
   }
 
   const allPosts = prisma.post.findMany({
+    take: limit,
+    skip,
     where: {
       AND: andConditions,
     },
