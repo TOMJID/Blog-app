@@ -8,10 +8,12 @@ const GetAllPosts = async (payload: {
   tags: string[] | [];
   isFeatured: boolean | undefined;
   status: PostStatus | undefined;
+  authorId: string | undefined;
 }) => {
-  const { search, tags, isFeatured, status } = payload;
+  const { search, tags, isFeatured, status, authorId } = payload;
   const andConditions: PostWhereInput[] = [];
 
+  //? search filter
   if (search) {
     andConditions.push({
       OR: [
@@ -26,6 +28,7 @@ const GetAllPosts = async (payload: {
     });
   }
 
+  //? tags filter
   if (tags.length > 0) {
     andConditions.push({
       tags: {
@@ -34,15 +37,24 @@ const GetAllPosts = async (payload: {
     });
   }
 
+  //? isFeatured filter
   if (typeof isFeatured === "boolean") {
     andConditions.push({
       isFeatured,
     });
   }
 
+  //? status filter
   if (status) {
     andConditions.push({
       status,
+    });
+  }
+
+  //? authorId filter
+  if (authorId) {
+    andConditions.push({
+      authorId,
     });
   }
 
