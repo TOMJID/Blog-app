@@ -51,6 +51,10 @@ const GetAllPosts = async (req: Request, res: Response) => {
     const limit = Number(req.query.limit ?? 10);
     const skip = (page - 1) * limit;
 
+    //? for sorting
+    const sortBy = req.query.sortBy as string | undefined;
+    const sortOrder = req.query.sortOrder as string | undefined;
+
     const result = await postService.GetAllPosts({
       search: searchString,
       tags,
@@ -60,6 +64,8 @@ const GetAllPosts = async (req: Request, res: Response) => {
       page,
       limit,
       skip,
+      sortBy,
+      sortOrder,
     });
 
     res.status(200).json(result);

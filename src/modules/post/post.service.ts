@@ -12,9 +12,21 @@ const GetAllPosts = async (payload: {
   page: number;
   limit: number;
   skip: number;
+  sortBy: string | undefined;
+  sortOrder: string | undefined;
 }) => {
-  const { search, tags, isFeatured, status, authorId, page, limit, skip } =
-    payload;
+  const {
+    search,
+    tags,
+    isFeatured,
+    status,
+    authorId,
+    page,
+    limit,
+    skip,
+    sortBy,
+    sortOrder,
+  } = payload;
   const andConditions: PostWhereInput[] = [];
 
   //? search filter
@@ -68,6 +80,13 @@ const GetAllPosts = async (payload: {
     where: {
       AND: andConditions,
     },
+
+    orderBy:
+      sortBy && sortOrder
+        ? {
+            [sortBy]: sortOrder,
+          }
+        : { createdAt: "desc" },
   });
   return allPosts;
 };
