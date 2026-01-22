@@ -26,9 +26,7 @@ const GetAllPosts = async (req: Request, res: Response) => {
       }
     })();
 
-    //? for status and authorId
-    // const status = req.query.status as PostStatus | undefined;
-
+    //? for status
     const status = (() => {
       const queryStatus = req.query.status;
       switch (queryStatus) {
@@ -45,11 +43,15 @@ const GetAllPosts = async (req: Request, res: Response) => {
       }
     })();
 
+    //? for authorId
+    const authorId = req.query.authorId as string | undefined;
+
     const result = await postService.GetAllPosts({
       search: searchString,
       tags,
       isFeatured,
       status,
+      authorId,
     });
 
     res.status(200).json(result);
