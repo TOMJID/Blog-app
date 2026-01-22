@@ -6,7 +6,7 @@ import { prisma } from "../../lib/prisma";
 const GetAllPosts = async (payload: {
   search: string | undefined;
   tags: string[] | [];
-  isFeatured: boolean;
+  isFeatured: boolean | undefined;
 }) => {
   const { search, tags, isFeatured } = payload;
   const andConditions: PostWhereInput[] = [];
