@@ -12,8 +12,8 @@ const GetAllPosts = async (payload: {
   page: number;
   limit: number;
   skip: number;
-  sortBy: string | undefined;
-  sortOrder: string | undefined;
+  sortBy: string;
+  sortOrder: string;
 }) => {
   const {
     search,
