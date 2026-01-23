@@ -74,21 +74,31 @@ const GetAllPosts = async (payload: {
     });
   }
 
-  const allPosts = prisma.post.findMany({
+  const allPosts = await prisma.post.findMany({
     take: limit,
     skip,
     where: {
       AND: andConditions,
     },
-
-    orderBy:
-      sortBy && sortOrder
-        ? {
-            [sortBy]: sortOrder,
-          }
-        : { createdAt: "desc" },
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
   });
-  return allPosts;
+
+  const totalData = await prisma.post.count({
+    where: {
+      AND: andConditions,
+    },
+  });
+  return {
+    data: allPosts,
+    pagination: {
+      totalData,
+      page,
+      limit,
+      totalPages: Math.ceil(totalData / limit),
+    },
+  };
 };
 
 //? creating new post
