@@ -7,6 +7,9 @@ const router = express.Router();
 //? get all posts
 router.get("/", PostController.GetAllPosts);
 
+//? get a single post my id
+router.get("/:postId", PostController.GetPostById);
+
 //? create new post
 router.post("/", auth(UserRole.USER), PostController.CreatePost);
 

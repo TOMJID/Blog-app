@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { postService } from "./post.service";
+import { PostService } from "./post.service";
 import { PostStatus } from "../../../generated/prisma/enums";
 import paginationAndSortingHelper from "../../helper/pagenationAndSortingHelper";
 
-//? getting all post
+//? getting all posts
 const GetAllPosts = async (req: Request, res: Response) => {
   try {
     //? for search
@@ -51,7 +51,7 @@ const GetAllPosts = async (req: Request, res: Response) => {
     const options = paginationAndSortingHelper(req.query);
     const { page, limit, skip, sortBy, sortOrder } = options;
 
-    const result = await postService.GetAllPosts({
+    const result = await PostService.GetAllPosts({
       search: searchString,
       tags,
       isFeatured,
@@ -73,6 +73,23 @@ const GetAllPosts = async (req: Request, res: Response) => {
   }
 };
 
+//? getting single post by id
+const GetPostById = async (req: Request, res: Response) => {
+  try {
+    const { postId } = req.params;
+    if (!postId) {
+      throw new Error("post id is required!");
+    }
+    const result = await PostService.GetPostById(postId);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({
+      error: "Post fetching failed",
+      details: error,
+    });
+  }
+};
+
 //? creating new post
 const CreatePost = async (req: Request, res: Response) => {
   try {
@@ -83,7 +100,7 @@ const CreatePost = async (req: Request, res: Response) => {
         error: "Unauthenticated",
       });
     }
-    const result = await postService.CreatePost(req.body, user.id as string);
+    const result = await PostService.CreatePost(req.body, user.id as string);
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({
@@ -95,5 +112,6 @@ const CreatePost = async (req: Request, res: Response) => {
 
 export const PostController = {
   GetAllPosts,
+  GetPostById,
   CreatePost,
 };

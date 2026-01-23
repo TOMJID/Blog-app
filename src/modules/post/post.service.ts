@@ -101,6 +101,28 @@ const GetAllPosts = async (payload: {
   };
 };
 
+//? getting single post by id
+const GetPostById = async (postId: string) => {
+  return await prisma.$transaction(async (timeline) => {
+    await timeline.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        view: {
+          increment: 1,
+        },
+      },
+    });
+    const postData = await timeline.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+    return postData;
+  });
+};
+
 //? creating new post
 const CreatePost = async (
   data: Omit<Post, "id" | "createdAt" | "updatedAt" | "authorId">,
@@ -115,7 +137,8 @@ const CreatePost = async (
   return result;
 };
 
-export const postService = {
+export const PostService = {
   GetAllPosts,
+  GetPostById,
   CreatePost,
 };
