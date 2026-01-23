@@ -4,7 +4,7 @@ import { PostStatus } from "../../../generated/prisma/enums";
 import paginationAndSortingHelper from "../../helper/pagenationAndSortingHelper";
 
 //? getting all posts
-const GetAllPosts = async (req: Request, res: Response) => {
+const getAllPosts = async (req: Request, res: Response) => {
   try {
     //? for search
     const { search } = req.query;
@@ -51,7 +51,7 @@ const GetAllPosts = async (req: Request, res: Response) => {
     const options = paginationAndSortingHelper(req.query);
     const { page, limit, skip, sortBy, sortOrder } = options;
 
-    const result = await PostService.GetAllPosts({
+    const result = await PostService.getAllPosts({
       search: searchString,
       tags,
       isFeatured,
@@ -74,13 +74,13 @@ const GetAllPosts = async (req: Request, res: Response) => {
 };
 
 //? getting single post by id
-const GetPostById = async (req: Request, res: Response) => {
+const getPostById = async (req: Request, res: Response) => {
   try {
     const { postId } = req.params;
     if (!postId) {
       throw new Error("post id is required!");
     }
-    const result = await PostService.GetPostById(postId);
+    const result = await PostService.getPostById(postId);
     res.status(200).json(result);
   } catch (error) {
     res.status(400).json({
@@ -91,7 +91,7 @@ const GetPostById = async (req: Request, res: Response) => {
 };
 
 //? creating new post
-const CreatePost = async (req: Request, res: Response) => {
+const createPost = async (req: Request, res: Response) => {
   try {
     const user = req.user;
     //? if there aren't any user on session
@@ -100,7 +100,7 @@ const CreatePost = async (req: Request, res: Response) => {
         error: "Unauthenticated",
       });
     }
-    const result = await PostService.CreatePost(req.body, user.id as string);
+    const result = await PostService.createPost(req.body, user.id as string);
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({
@@ -111,7 +111,7 @@ const CreatePost = async (req: Request, res: Response) => {
 };
 
 export const PostController = {
-  GetAllPosts,
-  GetPostById,
-  CreatePost,
+  getAllPosts,
+  getPostById,
+  createPost,
 };

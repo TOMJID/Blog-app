@@ -3,7 +3,7 @@ import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 
 //? getting all posts
-const GetAllPosts = async (payload: {
+const getAllPosts = async (payload: {
   search: string | undefined;
   tags: string[] | [];
   isFeatured: boolean | undefined;
@@ -102,7 +102,7 @@ const GetAllPosts = async (payload: {
 };
 
 //? getting single post by id
-const GetPostById = async (postId: string) => {
+const getPostById = async (postId: string) => {
   return await prisma.$transaction(async (timeline) => {
     await timeline.post.update({
       where: {
@@ -124,7 +124,7 @@ const GetPostById = async (postId: string) => {
 };
 
 //? creating new post
-const CreatePost = async (
+const createPost = async (
   data: Omit<Post, "id" | "createdAt" | "updatedAt" | "authorId">,
   userId: string,
 ) => {
@@ -138,7 +138,7 @@ const CreatePost = async (
 };
 
 export const PostService = {
-  GetAllPosts,
-  GetPostById,
-  CreatePost,
+  getAllPosts,
+  getPostById,
+  createPost,
 };
