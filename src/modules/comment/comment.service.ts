@@ -1,3 +1,5 @@
+import { prisma } from "../../lib/prisma";
+
 //? creating new post
 const createComment = async (payload: {
   content: string;
@@ -5,9 +7,31 @@ const createComment = async (payload: {
   postId: string;
   parentId: string;
 }) => {
-  console.log("payload: ", payload);
+  const postData = await prisma.post.findUnique({
+    where: {
+      id: payload.postId,
+    },
+  });
 
-  return payload;
+  if (!postData) {
+    throw new Error("Post not found");
+  }
+
+  if (payload.parentId) {
+    const parentData = await prisma.comment.findUnique({
+      where: {
+        id: payload.parentId,
+      },
+    });
+
+    if (!parentData) {
+      throw new Error("Parent comment not found");
+    }
+  }
+
+  return await prisma.comment.create({
+    data: payload,
+  });
 };
 
 export const CommentService = {

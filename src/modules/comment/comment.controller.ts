@@ -8,10 +8,10 @@ const createComment = async (req: Request, res: Response) => {
     req.body.authorId = user?.id;
     const result = await CommentService.createComment(req.body);
     res.status(200).json(result);
-  } catch (error) {
+  } catch (error: any) {
     res.status(404).json({
       message: "Comment creation failed",
-      details: error,
+      details: error.message,
     });
   }
 };
