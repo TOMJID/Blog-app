@@ -93,7 +93,7 @@ const deleteComment = async (commentId: string, authorId: string) => {
   });
 
   if (!commentData) {
-    throw new Error("Your provided input in invalid!");
+    throw new Error("Your provided input is invalid!");
   }
 
   return await prisma.comment.delete({
