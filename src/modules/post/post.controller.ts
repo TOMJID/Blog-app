@@ -5,7 +5,7 @@ import paginationAndSortingHelper from "../../helper/pagenationAndSortingHelper"
 import { UserRole } from "../../middlewares/auth";
 
 //? getting all posts
-const getAllPosts = async (req: Request, res: Response) => {
+const getAllPosts = async (req: Request, res: Response, next: NextFunction) => {
   try {
     //? for search
     const { search } = req.query;
@@ -67,15 +67,13 @@ const getAllPosts = async (req: Request, res: Response) => {
 
     res.status(200).json(result);
   } catch (error) {
-    res.status(401).json({
-      error: "Can't find any posts",
-      details: error,
-    });
+    next(error);
   }
 };
 
 //? getting single post by id
-const getPostById = async (req: Request, res: Response) => {
+//? getting single post by id
+const getPostById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { postId } = req.params;
     if (!postId) {
@@ -84,10 +82,7 @@ const getPostById = async (req: Request, res: Response) => {
     const result = await PostService.getPostById(postId);
     res.status(200).json(result);
   } catch (error) {
-    res.status(400).json({
-      error: "Post fetching failed",
-      details: error,
-    });
+    next(error);
   }
 };
 
@@ -109,7 +104,8 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 //? get a user all posts
-const getMyPosts = async (req: Request, res: Response) => {
+//? get a user all posts
+const getMyPosts = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user;
 
@@ -119,15 +115,13 @@ const getMyPosts = async (req: Request, res: Response) => {
     const result = await PostService.getMyPosts(user.id);
     res.status(200).json(result);
   } catch (error: any) {
-    res.status(400).json({
-      error: "Post fetching failed",
-      details: error.message,
-    });
+    next(error);
   }
 };
 
 //? update Post
-const updatePost = async (req: Request, res: Response) => {
+//? update Post
+const updatePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user;
 
@@ -150,15 +144,13 @@ const updatePost = async (req: Request, res: Response) => {
 
     res.status(200).json(result);
   } catch (error: any) {
-    res.status(400).json({
-      error: "Post update failed",
-      details: error.message,
-    });
+    next(error);
   }
 };
 
 //? delete post
-const deletePost = async (req: Request, res: Response) => {
+//? delete post
+const deletePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user;
 
@@ -176,23 +168,18 @@ const deletePost = async (req: Request, res: Response) => {
 
     res.status(200).json(result);
   } catch (error: any) {
-    res.status(400).json({
-      error: "Post delete failed",
-      details: error.message,
-    });
+    next(error);
   }
 };
 
 //? post stats
-const getStatus = async (req: Request, res: Response) => {
+//? post stats
+const getStatus = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await PostService.getStatus();
     res.status(200).json(result);
   } catch (error: any) {
-    res.status(400).json({
-      error: "Post status fetching failed",
-      details: error.message,
-    });
+    next(error);
   }
 };
 
