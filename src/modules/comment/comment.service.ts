@@ -139,19 +139,28 @@ const moderateComment = async (
     where: {
       id: commentId,
     },
+    select: {
+      id: true,
+      status: true,
+    },
   });
 
   if (!commentData) {
     throw new Error("comment not found!");
   }
 
+  if (commentData.status === data.status) {
+    throw new Error(
+      `Your provided status (${data.status}) is already ${data.status}`,
+    );
+  }
+  
   return await prisma.comment.update({
     where: {
       id: commentId,
     },
     data,
   });
-
 };
 
 export const CommentService = {

@@ -89,7 +89,7 @@ const moderateComment = async (req: Request, res: Response) => {
     res.status(200).json(result);
   } catch (error: any) {
     res.status(404).json({
-      message: "Unable on update comment!",
+      message: "Unable on update comment status!",
       error: error.message,
     });
   }
