@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { PostService } from "./post.service";
 import { PostStatus } from "../../../generated/prisma/enums";
 import paginationAndSortingHelper from "../../helper/pagenationAndSortingHelper";
+import { UserRole } from "../../middlewares/auth";
 
 //? getting all posts
 const getAllPosts = async (req: Request, res: Response) => {
@@ -110,8 +111,100 @@ const createPost = async (req: Request, res: Response) => {
   }
 };
 
+//? get a user all posts
+const getMyPosts = async (req: Request, res: Response) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      throw new Error("You are not logged in !");
+    }
+    const result = await PostService.getMyPosts(user.id);
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({
+      error: "Post fetching failed",
+      details: error.message,
+    });
+  }
+};
+
+//? update Post
+const updatePost = async (req: Request, res: Response) => {
+  try {
+    const user = req.user;
+
+    const isAdmin = user?.role === UserRole.ADMIN;
+
+    if (!user) {
+      throw new Error("You are not logged in !");
+    }
+    const { postId } = req.params;
+
+    if (!postId) {
+      throw new Error("Post id is required!");
+    }
+    const result = await PostService.updatePost(
+      postId,
+      req.body,
+      user.id,
+      isAdmin,
+    );
+
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({
+      error: "Post update failed",
+      details: error.message,
+    });
+  }
+};
+
+//? delete post
+const deletePost = async (req: Request, res: Response) => {
+  try {
+    const user = req.user;
+
+    const isAdmin = user?.role === UserRole.ADMIN;
+
+    if (!user) {
+      throw new Error("You are not logged in !");
+    }
+    const { postId } = req.params;
+
+    if (!postId) {
+      throw new Error("Post id is required!");
+    }
+    const result = await PostService.deletePost(postId, user.id, isAdmin);
+
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({
+      error: "Post delete failed",
+      details: error.message,
+    });
+  }
+};
+
+//? post stats
+const getStatus = async (req: Request, res: Response) => {
+  try {
+    const result = await PostService.getStatus();
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({
+      error: "Post status fetching failed",
+      details: error.message,
+    });
+  }
+};
+
 export const PostController = {
   getAllPosts,
   getPostById,
   createPost,
+  getMyPosts,
+  updatePost,
+  deletePost,
+  getStatus,
 };

@@ -5,6 +5,7 @@ import {
 } from "../../../generated/prisma/client";
 import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { UserRole } from "../../middlewares/auth";
 
 //? getting all posts
 const getAllPosts = async (payload: {
@@ -174,8 +175,191 @@ const createPost = async (
   return result;
 };
 
+//? get a user all posts
+const getMyPosts = async (authorId: string) => {
+  const userInfo = await prisma.user.findUnique({
+    where: {
+      id: authorId,
+    },
+    select: {
+      id: true,
+      status: true,
+    },
+  });
+
+  if (userInfo?.status !== "ACTIVE") {
+    throw new Error("User isn't active");
+  }
+
+  const result = await prisma.post.findMany({
+    where: {
+      authorId: authorId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
+    },
+  });
+  const total = await prisma.post.aggregate({
+    _count: {
+      id: true,
+    },
+    where: {
+      authorId,
+    },
+  });
+
+  return {
+    data: result,
+    total,
+  };
+};
+
+//? update posts
+const updatePost = async (
+  postId: string,
+  data: Partial<Post>,
+  authorId: string,
+  isAdmin: boolean,
+) => {
+  const post = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+  });
+
+  if (!post) {
+    throw new Error("Post not found");
+  }
+
+  if (!isAdmin && post.authorId !== authorId) {
+    throw new Error("You are not authorized to update this post");
+  }
+
+  if (!isAdmin) {
+    delete data.isFeatured;
+  }
+
+  const result = await prisma.post.update({
+    where: {
+      id: postId,
+    },
+    data,
+  });
+  return result;
+};
+
+//? delete post
+const deletePost = async (
+  postId: string,
+  authorId: string,
+  isAdmin: boolean,
+) => {
+  const postData = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+  });
+  if (!postData) {
+    throw new Error("Post not found");
+  }
+  if (!isAdmin && postData.authorId !== authorId) {
+    throw new Error("You are not authorized to delete this post");
+  }
+  const result = await prisma.post.delete({
+    where: {
+      id: postId,
+    },
+  });
+  return result;
+};
+
+//? get stats data on posts
+const getStatus = async () => {
+  return await prisma.$transaction(async (timeline) => {
+    const [
+      totalPosts,
+      publishedPostCount,
+      draftPostCount,
+      archivedPostCount,
+      totalComments,
+      approvedCommentCount,
+      totalUsers,
+      adminUserCount,
+      normalUserCount,
+      totalViews,
+    ] = await Promise.all([
+      timeline.post.count(),
+      timeline.post.count({
+        where: {
+          status: PostStatus.PUBLISHED,
+        },
+      }),
+      timeline.post.count({
+        where: {
+          status: PostStatus.DRAFT,
+        },
+      }),
+      timeline.post.count({
+        where: {
+          status: PostStatus.ARCHIVED,
+        },
+      }),
+      timeline.comment.count({
+        where: {
+          parentId: null,
+        },
+      }),
+      timeline.comment.count({
+        where: {
+          status: CommentStatus.APPROVED,
+        },
+      }),
+      timeline.user.count(),
+      timeline.user.count({
+        where: {
+          role: UserRole.ADMIN,
+        },
+      }),
+      timeline.user.count({
+        where: {
+          role: UserRole.USER,
+        },
+      }),
+      timeline.post.aggregate({
+        _sum: {
+          view: true,
+        },
+      }),
+    ]);
+
+    return {
+      totalPosts,
+      publishedPostCount,
+      draftPostCount,
+      archivedPostCount,
+      totalComments,
+      approvedCommentCount,
+      totalUsers,
+      adminUserCount,
+      normalUserCount,
+      totalViews: totalViews._sum.view,
+    };
+  });
+};
+
 export const PostService = {
   getAllPosts,
   getPostById,
   createPost,
+  getMyPosts,
+  updatePost,
+  deletePost,
+  getStatus,
 };

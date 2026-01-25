@@ -1,0 +1,26 @@
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Post {
+  id         String     @id @default(uuid())
+  title      String     @db.VarChar(255)
+  content    String     @db.Text
+  thumbnail  String?
+  isFeatured Boolean    @default(false)
+  status     PostStatus @default(PUBLISHED)
+  tags       String[]
+  view       Int        @default(0)
+  authorId   String //? well be manage by betterAuth
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  //? one-to-many relationship between Post and Comment models.
+  comments Comment[]
+
+  //? indexing
+  @@index([authorId])
+  @@map("posts")
+}
