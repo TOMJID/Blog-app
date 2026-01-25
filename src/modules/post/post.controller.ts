@@ -72,7 +72,6 @@ const getAllPosts = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 //? getting single post by id
-//? getting single post by id
 const getPostById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { postId } = req.params;
@@ -104,7 +103,6 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 //? get a user all posts
-//? get a user all posts
 const getMyPosts = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user;
@@ -119,7 +117,6 @@ const getMyPosts = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-//? update Post
 //? update Post
 const updatePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -149,7 +146,6 @@ const updatePost = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 //? delete post
-//? delete post
 const deletePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user;
@@ -172,7 +168,6 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-//? post stats
 //? post stats
 const getStatus = async (req: Request, res: Response, next: NextFunction) => {
   try {

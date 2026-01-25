@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { CommentService } from "./comment.service";
 
 //?getting comment by comment id
-
 const getCommentById = async (
   req: Request,
   res: Response,
@@ -18,7 +17,6 @@ const getCommentById = async (
 };
 
 //?getting comment by author id
-
 const getCommentByAuthor = async (
   req: Request,
   res: Response,
@@ -34,7 +32,6 @@ const getCommentByAuthor = async (
 };
 
 //? creating new post
-
 const createComment = async (
   req: Request,
   res: Response,
@@ -51,7 +48,6 @@ const createComment = async (
 };
 
 //? deleting comment
-
 const deleteComment = async (
   req: Request,
   res: Response,
@@ -71,7 +67,6 @@ const deleteComment = async (
 };
 
 //? update comment
-
 const updateComment = async (
   req: Request,
   res: Response,
@@ -92,7 +87,6 @@ const updateComment = async (
 };
 
 //?for admin only to moderate comment
-
 const moderateComment = async (
   req: Request,
   res: Response,
