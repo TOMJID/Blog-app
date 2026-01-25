@@ -5,6 +5,7 @@ import {
 } from "../../../generated/prisma/client";
 import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { UserRole } from "../../middlewares/auth";
 
 //? getting all posts
 const getAllPosts = async (payload: {
@@ -279,6 +280,80 @@ const deletePost = async (
   return result;
 };
 
+//? get stats data on posts
+const getStatus = async () => {
+  return await prisma.$transaction(async (timeline) => {
+    const [
+      totalPosts,
+      publishedPostCount,
+      draftPostCount,
+      archivedPostCount,
+      totalComments,
+      approvedCommentCount,
+      totalUsers,
+      adminUserCount,
+      normalUserCount,
+      totalViews,
+    ] = await Promise.all([
+      timeline.post.count(),
+      timeline.post.count({
+        where: {
+          status: PostStatus.PUBLISHED,
+        },
+      }),
+      timeline.post.count({
+        where: {
+          status: PostStatus.DRAFT,
+        },
+      }),
+      timeline.post.count({
+        where: {
+          status: PostStatus.ARCHIVED,
+        },
+      }),
+      timeline.comment.count({
+        where: {
+          parentId: null,
+        },
+      }),
+      timeline.comment.count({
+        where: {
+          status: CommentStatus.APPROVED,
+        },
+      }),
+      timeline.user.count(),
+      timeline.user.count({
+        where: {
+          role: UserRole.ADMIN,
+        },
+      }),
+      timeline.user.count({
+        where: {
+          role: UserRole.USER,
+        },
+      }),
+      timeline.post.aggregate({
+        _sum: {
+          view: true,
+        },
+      }),
+    ]);
+
+    return {
+      totalPosts,
+      publishedPostCount,
+      draftPostCount,
+      archivedPostCount,
+      totalComments,
+      approvedCommentCount,
+      totalUsers,
+      adminUserCount,
+      normalUserCount,
+      totalViews: totalViews._sum.view,
+    };
+  });
+};
+
 export const PostService = {
   getAllPosts,
   getPostById,
@@ -286,4 +361,5 @@ export const PostService = {
   getMyPosts,
   updatePost,
   deletePost,
+  getStatus,
 };

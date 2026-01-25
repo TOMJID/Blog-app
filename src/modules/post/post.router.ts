@@ -7,6 +7,9 @@ const router = express.Router();
 //? get all posts
 router.get("/", PostController.getAllPosts);
 
+//? get stats
+router.get("/stats", PostController.getStatus);
+
 //? get my posts
 router.get(
   "/my-posts",
