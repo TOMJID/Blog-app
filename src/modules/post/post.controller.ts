@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { PostService } from "./post.service";
 import { PostStatus } from "../../../generated/prisma/enums";
 import paginationAndSortingHelper from "../../helper/pagenationAndSortingHelper";
+import { UserRole } from "../../middlewares/auth";
 
 //? getting all posts
 const getAllPosts = async (req: Request, res: Response) => {
@@ -133,6 +134,8 @@ const updatePost = async (req: Request, res: Response) => {
   try {
     const user = req.user;
 
+    const isAdmin = user?.role === UserRole.ADMIN;
+
     if (!user) {
       throw new Error("You are not logged in !");
     }
@@ -141,7 +144,12 @@ const updatePost = async (req: Request, res: Response) => {
     if (!postId) {
       throw new Error("Post id is required!");
     }
-    const result = await PostService.updatePost(postId, req.body, user.id);
+    const result = await PostService.updatePost(
+      postId,
+      req.body,
+      user.id,
+      isAdmin,
+    );
 
     res.status(200).json(result);
   } catch (error: any) {
