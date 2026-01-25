@@ -80,10 +80,26 @@ const updateComment = async (req: Request, res: Response) => {
     });
   }
 };
+
+//?for admin only to moderate comment
+const moderateComment = async (req: Request, res: Response) => {
+  try {
+    const { commentId } = req.params;
+    const result = await CommentService.moderateComment(commentId, req.body);
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(404).json({
+      message: "Unable on update comment!",
+      error: error.message,
+    });
+  }
+};
+
 export const CommentController = {
   getCommentById,
   getCommentByAuthor,
   createComment,
   deleteComment,
   updateComment,
+  moderateComment,
 };

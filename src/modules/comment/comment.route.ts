@@ -30,4 +30,12 @@ router.patch(
   auth(UserRole.USER, UserRole.ADMIN),
   CommentController.updateComment,
 );
+
+//? for moderating comment
+router.patch(
+  "/moderate/:commentId",
+  auth(UserRole.ADMIN),
+  CommentController.moderateComment,
+);
+
 export const commentRoute = router;

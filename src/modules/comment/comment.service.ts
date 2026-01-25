@@ -110,7 +110,6 @@ const updateComment = async (
   data: { content?: string; status?: CommentStatus },
   authorId: string,
 ) => {
-  console.log(commentId, data, authorId);
   const commentData = await prisma.comment.findFirst({
     where: {
       id: commentId,
@@ -131,10 +130,35 @@ const updateComment = async (
   });
 };
 
+//? for moderating comment by admin
+const moderateComment = async (
+  commentId: string,
+  data: { status: CommentStatus },
+) => {
+  const commentData = await prisma.comment.findUnique({
+    where: {
+      id: commentId,
+    },
+  });
+
+  if (!commentData) {
+    throw new Error("comment not found!");
+  }
+
+  return await prisma.comment.update({
+    where: {
+      id: commentId,
+    },
+    data,
+  });
+
+};
+
 export const CommentService = {
   getCommentById,
   getCommentByAuthor,
   createComment,
   deleteComment,
   updateComment,
+  moderateComment,
 };
