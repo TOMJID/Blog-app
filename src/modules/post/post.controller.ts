@@ -110,8 +110,27 @@ const createPost = async (req: Request, res: Response) => {
   }
 };
 
+//? get a user all posts
+const getMyPosts = async (req: Request, res: Response) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      throw new Error("You are not logged in !");
+    }
+    const result = await PostService.getMyPosts(user.id);
+    res.status(200).json(result);
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({
+      error: "Post fetching failed",
+      details: error.message,
+    });
+  }
+};
 export const PostController = {
   getAllPosts,
   getPostById,
   createPost,
+  getMyPosts,
 };
