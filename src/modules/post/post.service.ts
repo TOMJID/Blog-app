@@ -176,14 +176,48 @@ const createPost = async (
 
 //? get a user all posts
 const getMyPosts = async (authorId: string) => {
-  return await prisma.post.findMany({
+  const userInfo = await prisma.user.findUnique({
+    where: {
+      id: authorId,
+    },
+    select: {
+      id: true,
+      status: true,
+    },
+  });
+
+  if (userInfo?.status !== "ACTIVE") {
+    throw new Error("User isn't active");
+  }
+
+  const result = await prisma.post.findMany({
     where: {
       authorId: authorId,
     },
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
+    },
   });
+  const total = await prisma.post.aggregate({
+    _count: {
+      id: true,
+    },
+    where: {
+      authorId,
+    },
+  });
+
+  return {
+    data: result,
+    total,
+  };
 };
 
 export const PostService = {

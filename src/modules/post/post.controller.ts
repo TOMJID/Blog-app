@@ -121,7 +121,6 @@ const getMyPosts = async (req: Request, res: Response) => {
     const result = await PostService.getMyPosts(user.id);
     res.status(200).json(result);
   } catch (error: any) {
-    console.log(error);
     res.status(400).json({
       error: "Post fetching failed",
       details: error.message,
