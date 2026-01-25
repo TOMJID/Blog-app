@@ -127,9 +127,34 @@ const getMyPosts = async (req: Request, res: Response) => {
     });
   }
 };
+
+//? update Post
+const updatePost = async (req: Request, res: Response) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      throw new Error("You are not logged in !");
+    }
+    const { postId } = req.params;
+
+    if (!postId) {
+      throw new Error("Post id is required!");
+    }
+    const result = await PostService.updatePost(postId, req.body, user.id);
+
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({
+      error: "Post update failed",
+      details: error.message,
+    });
+  }
+};
 export const PostController = {
   getAllPosts,
   getPostById,
   createPost,
   getMyPosts,
+  updatePost,
 };

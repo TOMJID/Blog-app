@@ -220,9 +220,50 @@ const getMyPosts = async (authorId: string) => {
   };
 };
 
+//? update posts
+const updatePost = async (
+  postId: string,
+  data: Partial<Post>,
+  authorId: string,
+) => {
+  console.log(
+    "psstId: ",
+    postId,
+    "\n",
+    "data: ",
+    data,
+    "\n",
+    "authorId: ",
+    authorId,
+  );
+
+  const post = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+  });
+
+  if (!post) {
+    throw new Error("Post not found");
+  }
+
+  if (post.authorId !== authorId) {
+    throw new Error("You are not authorized to update this post");
+  }
+
+  const result = await prisma.post.update({
+    where: {
+      id: postId,
+    },
+    data,
+  });
+  return result;
+};
+
 export const PostService = {
   getAllPosts,
   getPostById,
   createPost,
   getMyPosts,
+  updatePost,
 };
